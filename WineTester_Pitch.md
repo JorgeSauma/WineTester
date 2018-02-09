@@ -87,12 +87,40 @@ Summary of sample sizes: 1200, 1200, 1200, 1200, 1200, 1200, ...
 Resampling results across tuning parameters:
 
   mtry  RMSE       Rsquared   MAE      
-  2     0.6599649  0.3491418  0.4901790
-  3     0.6688691  0.3364541  0.4954775
+  2     0.6606350  0.3541596  0.4877354
+  3     0.6673128  0.3462610  0.4910974
 
 RMSE was used to select the optimal model using the smallest value.
 The final value used for the model was mtry = 2.
 ```
 
-ENJOY!
+Shiny App
 ========================================================
+
+The shiny app will use the model to predict a value:
+
+
+```r
+shinyServer(function(input, output) {
+  
+  QualityPred <- reactive({
+    AlcoholInput <- input$Alcohol_sl
+    SulphatesInput <- input$Sulphates_sl
+    Acidityinput <- input$Acidity_sl
+    round(predict(modFit1, newdata = data.frame(Alcohol=AlcoholInput, Sulphates=SulphatesInput, VolatileAcidity=Acidityinput)))
+    })
+  
+  output$Quality <- renderText({
+    value<-QualityPred()
+    print(value)
+    if (value >=0 & value<2) { "Very Bad" }
+    else if (value>=2 & value<3) { "Bad" }
+    else if (value>=3 & value<4) { "Average" }
+    else if (value>=4 & value<5) { "Above average" }
+    else if (value>=5 & value<6) { "Good" }
+    else if (value>=6 & value<7) { "Very Good" }
+    else if (value>=7) {"Excellent"}
+    else {"Calculating..."}
+  })
+})
+```

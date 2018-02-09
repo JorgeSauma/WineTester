@@ -9979,8 +9979,8 @@ Summary of sample sizes: 1200, 1200, 1200, 1200, 1200, 1200, ...
 Resampling results across tuning parameters:
 
   mtry  RMSE       Rsquared   MAE      
-  2     0.6599649  0.3491418  0.4901790
-  3     0.6688691  0.3364541  0.4954775
+  2     0.6606350  0.3541596  0.4877354
+  3     0.6673128  0.3462610  0.4910974
 
 RMSE was used to select the optimal model using the smallest value.
 The final value used for the model was mtry = 2.
@@ -9990,8 +9990,33 @@ The final value used for the model was mtry = 2.
 
 </section>
 <section data-transition="linear" data-transition-speed="default">
-<h3>ENJOY!</h3>
+<h3>Shiny App</h3>
 <div class="slideContent" >
+<p>The shiny app will use the model to predict a value:</p>
+
+<pre><code class="r">shinyServer(function(input, output) {
+
+  QualityPred &lt;- reactive({
+    AlcoholInput &lt;- input$Alcohol_sl
+    SulphatesInput &lt;- input$Sulphates_sl
+    Acidityinput &lt;- input$Acidity_sl
+    round(predict(modFit1, newdata = data.frame(Alcohol=AlcoholInput, Sulphates=SulphatesInput, VolatileAcidity=Acidityinput)))
+    })
+
+  output$Quality &lt;- renderText({
+    value&lt;-QualityPred()
+    print(value)
+    if (value &gt;=0 &amp; value&lt;2) { &quot;Very Bad&quot; }
+    else if (value&gt;=2 &amp; value&lt;3) { &quot;Bad&quot; }
+    else if (value&gt;=3 &amp; value&lt;4) { &quot;Average&quot; }
+    else if (value&gt;=4 &amp; value&lt;5) { &quot;Above average&quot; }
+    else if (value&gt;=5 &amp; value&lt;6) { &quot;Good&quot; }
+    else if (value&gt;=6 &amp; value&lt;7) { &quot;Very Good&quot; }
+    else if (value&gt;=7) {&quot;Excellent&quot;}
+    else {&quot;Calculating...&quot;}
+  })
+})
+</code></pre>
 
 </div>
 

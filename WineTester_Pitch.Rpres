@@ -69,5 +69,32 @@ modFit1
 
 ```
 
-ENJOY!
+Shiny App
 ========================================================
+
+The shiny app will use the model to predict a value:
+
+``` {r, eval=FALSE}
+shinyServer(function(input, output) {
+  
+  QualityPred <- reactive({
+    AlcoholInput <- input$Alcohol_sl
+    SulphatesInput <- input$Sulphates_sl
+    Acidityinput <- input$Acidity_sl
+    round(predict(modFit1, newdata = data.frame(Alcohol=AlcoholInput, Sulphates=SulphatesInput, VolatileAcidity=Acidityinput)))
+    })
+  
+  output$Quality <- renderText({
+    value<-QualityPred()
+    print(value)
+    if (value >=0 & value<2) { "Very Bad" }
+    else if (value>=2 & value<3) { "Bad" }
+    else if (value>=3 & value<4) { "Average" }
+    else if (value>=4 & value<5) { "Above average" }
+    else if (value>=5 & value<6) { "Good" }
+    else if (value>=6 & value<7) { "Very Good" }
+    else if (value>=7) {"Excellent"}
+    else {"Calculating..."}
+  })
+})
+```
