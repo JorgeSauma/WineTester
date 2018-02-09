@@ -1,0 +1,73 @@
+The Wine Tester
+========================================================
+author: Jorge Sauma
+date: February 9th, 2018
+autosize: true
+css: bootstrap.css
+width: 1440
+height:1400
+
+What is the Wine Tester
+========================================================
+
+- The Wine Tester is a web page that can tell if a wine's quality is good or bad.
+
+- User just needs to enter the values of three of the main wine's attributes to get the quality of such wine. 
+
+- The used attributes are: Alcohol level, Sulphites level, and the Volatile Acidity.
+
+- The Wine Tester is good tool to select a good wine without having to be a wine expert.
+
+Technical details
+========================================================
+
+"The Wine Tester" was inspired by this paper:
+- https://www.sciencedirect.com/science/article/pii/S0167923609001377?via%3Dihub
+
+Original data can be downloaded here:
+- http://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/
+
+Here is the description of the data. Note: data was rearranged to get a better dataset:
+
+```{r, echo=FALSE}
+library(shiny)
+library(caret)
+library(tidyr)
+library(randomForest)
+```
+
+```{r, echo=FALSE}
+wine_data<-read.csv("https://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv")
+
+colnames(wine_data) <- "Wine_colnames"
+Tidy_wine_data <- separate(wine_data, Wine_colnames, into=c("FixedAcidity", "VolatileAcidity", "CitricAcid", "ResidualSugar", "Chlorides", "FreeSulfurDioxide", "TotalSulfurDioxide", "Density", "pH", "Sulphates", "Alcohol", "Quality"), sep=";")
+```
+
+``` {r}
+str (Tidy_wine_data)
+```
+
+Model details
+========================================================
+
+The model for the Wine Tester was created using the Random Forest algorithm. Here are the details of the model definition:
+
+```{r, echo=FALSE}
+Tidy_wine_data<-as.data.frame(sapply(Tidy_wine_data, as.numeric))
+
+wine_short_set<-Tidy_wine_data[c("Alcohol", "Sulphates", "VolatileAcidity", "Quality")]
+training_partition <- createDataPartition(y = wine_short_set$Quality, p = 0.75, list=FALSE)
+training <- wine_short_set[training_partition,]
+validation <- wine_short_set[-training_partition,]
+```
+
+```{r}
+set.seed(2402)
+modFit1<-train(Quality ~ ., data=training, method = "rf", proxy=TRUE)
+
+modFit1
+
+```
+
+ENJOY!
+========================================================
